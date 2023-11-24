@@ -24,22 +24,6 @@ public class FiboLogic {
 	        return existingOp.getResult();
 	    }
 
-	  /*
-	    if (pos <= 1) {
-	    	existingOp = repo.findByPos(pos);
-	    	 if (existingOp == null) {
-		            
-		            Operation op = new Operation(pos, pos, 1);
-		            repo.persist(op);
-		            return op.getResult();
-		        } else {  
-		            existingOp.setCount(existingOp.getCount() + 1);
-		            repo.persist(existingOp);
-		            return existingOp.getResult();
-		        }
-	    }
-	    */
-
 	    long prev = 0;
 	    long current = 1;
 
@@ -69,7 +53,6 @@ public class FiboLogic {
 	        }
 	    }
 
-
-		    return current;
+		return current;
 	}
 }
