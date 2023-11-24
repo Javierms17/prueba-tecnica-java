@@ -6,5 +6,7 @@ import models.Operation;
 
 @ApplicationScoped
 public class OperationRepository implements PanacheRepository<Operation> {
-
+    public Operation findByPos(int pos) {
+        return find("pos", pos).firstResult();
+    }
 }
