@@ -8,6 +8,7 @@ import models.Operation;
 import repository.OperationRepository;
 
 @ApplicationScoped
+@Transactional
 public class FiboLogic {
 	
 	@Inject
@@ -15,12 +16,16 @@ public class FiboLogic {
 	
 
 	public long resolveFibo(int pos) {
+		if(pos==0){
+			return pos;
+		}
 		  // Verificar si ya existe una entrada para la posición en la base de datos
 	    Operation existingOp = repo.findByPos(pos);
 	    if (existingOp != null) {
 	        // Si ya existe, retornar el resultado almacenado
 	        existingOp.setCount(existingOp.getCount() + 1);
 	        repo.persist(existingOp);
+			System.out.println("res "+existingOp.getResult());
 	        return existingOp.getResult();
 	    }
 
@@ -52,7 +57,7 @@ public class FiboLogic {
 	            repo.persist(op);
 	        }
 	    }
-
+		System.out.println("res abajo "+current);
 		return current;
 	}
 }

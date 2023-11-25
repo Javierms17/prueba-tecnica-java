@@ -26,12 +26,15 @@ public class Fibonacci {
 	@Inject
     OperationRepository repo;
 
-    @GET
-    @Path("/top10")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Operation> getTop10() {
-    	 return repo.find("count > 0 order by count desc").range(0, 10).list();
-    }
+	@GET
+	@Path("/top10")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Operation> getTop10() {
+		 List<Operation> top10List = repo.find("count > 0 order by count desc")
+		            .page(0, 10)
+		            .list();
+	    return top10List;
+	}
 	
     @GET
     @Path("/{pos}")
