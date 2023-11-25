@@ -7,25 +7,30 @@ import jakarta.transaction.Transactional;
 import models.Operation;
 import repository.OperationRepository;
 
+import java.util.List;
+
 @ApplicationScoped
 @Transactional
 public class FiboLogic {
 	
 	@Inject
 	OperationRepository repo;
-	
 
+
+	// resolves the Fibbonacci, saves in the database the consulted entry (pos)
+	// and saves in the database the intermediate values
 	public long resolveFibo(int pos) {
+		// particular case
 		if(pos==0){
+			Operation existingOp = verifyAndPersistOP(pos);
+			if (existingOp != null) {
+				return existingOp.getResult();
+			}
 			return pos;
 		}
-		  // Verificar si ya existe una entrada para la posición en la base de datos
-	    Operation existingOp = repo.findByPos(pos);
+		// verify if the operation exist in the database
+		Operation existingOp = verifyAndPersistOP(pos);
 	    if (existingOp != null) {
-	        // Si ya existe, retornar el resultado almacenado
-	        existingOp.setCount(existingOp.getCount() + 1);
-	        repo.persist(existingOp);
-			System.out.println("res "+existingOp.getResult());
 	        return existingOp.getResult();
 	    }
 
@@ -36,6 +41,7 @@ public class FiboLogic {
 	        long next = prev + current;
 	        prev = current;
 	        current = next;
+			//fixing particular cases f(0) and f(1)
 	        if(i==0) {
 	        	prev=0;
 	        	next= 0;
@@ -44,20 +50,38 @@ public class FiboLogic {
 	        	prev=0;
 	        	next= 1;
 	        }
-	        // Verificar si ya existe una entrada para la posición
+
 	        existingOp = repo.findByPos(i);
 	        if (existingOp == null) {
-	            // Guardar resultado intermedio solo si no existe
-	        	
-	        		Operation op = new Operation(i, next, 0);
-	        		if(i==pos) {
-	        			op.setCount(1);
-	        		}
-	            
+				Operation op = new Operation(i, next, 0);
+				if(i==pos) {
+					op.setCount(1);
+				}
 	            repo.persist(op);
 	        }
 	    }
-		System.out.println("res abajo "+current);
+
 		return current;
+	}
+
+	//returns a list of results ordered by count
+	//to get the top 10 of the most consulted entries
+	public List<Operation> getTop10(){
+		List<Operation> top10List = repo.find("count > 0 order by count desc")
+				.page(0, 10)
+				.list();
+		return top10List;
+	}
+
+	// verify if the operation exist in the database
+	// in case it exists: count +1
+	public Operation verifyAndPersistOP(int pos){
+		Operation existingOp = repo.findByPos(pos);
+		if (existingOp != null) {
+			existingOp.setCount(existingOp.getCount() + 1);
+			repo.persist(existingOp);
+			return existingOp;
+		}
+		return existingOp;
 	}
 }
