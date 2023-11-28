@@ -20,6 +20,11 @@ public class FiboLogic {
 	// resolves the Fibbonacci, saves in the database the consulted entry (pos)
 	// and saves in the database the intermediate values
 	public long resolveFibo(int pos) {
+		//if it is a negative number it doesn't count as a valid entry
+		//because you can't have a result
+		if(pos<0){
+			return 0;
+		}
 		// particular case
 		if(pos==0){
 			Operation existingOp = verifyAndPersistOP(pos);
